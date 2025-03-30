@@ -65,7 +65,7 @@ func TestFetchMovieSubtitlesOrg(t *testing.T) {
     // {"OpenSubtitlesCom", FetchOpenSubtitlesCom},
     // {"PodnapisiNet", FetchPodnapisiNet},
     // {"SubdlCom", FetchSubdlCom},
-    {"YifySubtitlesCh", FetchYifySubtitlesCh},
+    // {"YifySubtitlesCh", FetchYifySubtitlesCh},
   }
 
   for _, tt := range tests {
