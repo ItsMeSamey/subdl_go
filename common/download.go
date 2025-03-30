@@ -133,13 +133,13 @@ type MovieListData struct {
   // The Options when frtching the list of subtitles for this movie
   Options SearchOptions
 }
-type MovieList interface {
+type MovieListEntry interface {
   Data() *MovieListData
-  ToSubtitleLinks() ([]SubtitleList, error)
+  ToSubtitleLinks() ([]SubtitleListEntry, error)
 }
 
 type SubtitleListData struct {
-  Parent *MovieList
+  Parent MovieListEntry
   // Name of the subtitle file
   Filename string
   // Language of the subtitle file
@@ -147,27 +147,23 @@ type SubtitleListData struct {
   // Setting this to "" will force refetching when calling DownloadLink()
   Target string
 }
-type SubtitleList interface {
+type SubtitleListEntry interface {
   Data() *SubtitleListData
   // Weather the downloaded file is a zip file or not
   IsZip() bool
   // Returns the Download link from where we can fetch the subtitle file
   DownloadLink() (string, error)
-  // Downloads the subtitle file and returns the downloaded file
-  Download() (DownloadedFile, error)
 }
 
-type DownloadedSubtitle struct {
+
+type DownloadedSubtitleEntry struct {
   Subtitle []byte
   Filename  string
 }
-type DownloadedFileData struct {
-  Parent *SubtitleList
+type DownloadedSubtitle struct {
+  Parent SubtitleListEntry
 
   // May contain 0, or 1 or more subtitles
-  Subtitles []DownloadedSubtitle
-}
-type DownloadedFile interface {
-  Data() *DownloadedFileData
+  Subtitles []DownloadedSubtitleEntry
 }
 

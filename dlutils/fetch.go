@@ -38,6 +38,7 @@ func (init FetchInit) AsFasthttpRequest() (req fasthttp.Request) {
 
 func FetchText(url string, init FetchInit) (body []byte, status ResponseStatus, err error) {
   req := init.AsFasthttpRequest()
+  req.SetRequestURI(url)
   resp := fasthttp.Response{}
   if err = utils.WithStack(fasthttp.DoRedirects(&req, &resp, init.MaxRedirects)); err != nil { return }
 
@@ -56,13 +57,5 @@ func FetchHtml(url string, init FetchInit) (out *goquery.Document, status Respon
   if err != nil { return }
   doc, err := goquery.NewDocumentFromReader(bytes.NewReader(body))
   return doc, status, utils.WithStack(err)
-}
-
-func Download(url string, init FetchInit, processResponse func(req *fasthttp.Response) error) (err error) {
-  req := init.AsFasthttpRequest()
-  resp := fasthttp.Response{}
-  if err = utils.WithStack(fasthttp.DoRedirects(&req, &resp, init.MaxRedirects)); err != nil { return }
-
-  return utils.WithStack(processResponse(&resp))
 }
 
