@@ -1,4 +1,4 @@
-module subtitle_downloader
+module github.com/ItsMeSamey/subdl_go
 
 go 1.24.1
 

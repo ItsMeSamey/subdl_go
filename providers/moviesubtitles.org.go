@@ -4,8 +4,8 @@ import (
   "net/url"
   "strings"
 
-  "subtitle_downloader/common"
-  "subtitle_downloader/dlutils"
+  "github.com/ItsMeSamey/subdl_go/common"
+  "github.com/ItsMeSamey/subdl_go/dlutils"
 
   "github.com/ItsMeSamey/go_utils"
   "github.com/PuerkitoBio/goquery"

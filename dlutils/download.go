@@ -1,13 +1,13 @@
 package dlutils
 
 import (
-  "archive/zip"
-  "bytes"
   "io"
+  "bytes"
   "regexp"
   "strings"
+  "archive/zip"
 
-  "subtitle_downloader/common"
+  "github.com/ItsMeSamey/subdl_go/common"
 
   "github.com/ItsMeSamey/go_fuzzy"
   "github.com/ItsMeSamey/go_fuzzy/heuristics"

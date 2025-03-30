@@ -3,8 +3,8 @@ package providers
 import (
   "testing"
 
-  "subtitle_downloader/common"
-  "subtitle_downloader/dlutils"
+  "github.com/ItsMeSamey/subdl_go/common"
+  "github.com/ItsMeSamey/subdl_go/dlutils"
 
   "github.com/ItsMeSamey/go_fuzzy/heuristics"
   "github.com/ItsMeSamey/go_fuzzy/transformers"
