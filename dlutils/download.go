@@ -16,11 +16,6 @@ import (
   "github.com/valyala/fasthttp"
 )
 
-type sortable []*zip.File
-func (s sortable) Len() int { return len(s) }
-func (s sortable) Get(i int) string { return s[i].Name }
-func (s sortable) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
-
 // An internal method that tries to unpack a zipped subtitle file
 func unpackZipped(sorter fuzzy.Sorter[float32, string, string], target string, data []byte) (out []common.DownloadedSubtitleEntry, err error) {
   r, err := zip.NewReader(bytes.NewReader(data), int64(len(data)))
@@ -38,7 +33,7 @@ func unpackZipped(sorter fuzzy.Sorter[float32, string, string], target string, d
 
   if len(srtFiles) == 0 { srtFiles = allFiles }
   if len(srtFiles) > 1 {
-    sorter.SortAny(sortable(srtFiles), target)
+    sorter.SortAny(fuzzy.ToSwapper(srtFiles, func (f *zip.File) string { return f.Name }), target)
   }
   for _, f := range srtFiles {
     rc, err := f.Open()
@@ -54,7 +49,7 @@ func unpackZipped(sorter fuzzy.Sorter[float32, string, string], target string, d
 }
 
 var filenameRegex = regexp.MustCompile(`filename="([^"]+?)"`)
-func Download(entry common.SubtitleListEntry) (retval common.DownloadedSubtitle, err error) {
+func DownloadSubtitleEntry(entry common.SubtitleListEntry) (retval common.DownloadedSubtitle, err error) {
   url, err := entry.DownloadLink()
   if err = utils.WithStack(err); err != nil { return }
 
@@ -87,7 +82,7 @@ func Download(entry common.SubtitleListEntry) (retval common.DownloadedSubtitle,
   return
 }
 
-func DownloadSubtitle(
+func DownloadSubtitles(
   query string,
   options common.SearchOptions,
   provider func(query string, options common.SearchOptions) ([]common.MovieListEntry, error),
@@ -97,7 +92,7 @@ func DownloadSubtitle(
     options.Sorter.Transformer = transformers.Lowercase()
   }
 
-  movies, err := provider("The Matrix", options)
+  movies, err := provider(query, options)
   if err = utils.WithStack(err); err != nil { return }
   if len(movies) == 0 { return }
   // TODO: maybe sort movies
@@ -107,7 +102,7 @@ func DownloadSubtitle(
   if len(subtitles) == 0 { return }
   // TODO: maybe sort subtitles
 
-  retval, err = Download(subtitles[0])
+  retval, err = DownloadSubtitleEntry(subtitles[0])
   if err = utils.WithStack(err); err != nil { return }
 
   return

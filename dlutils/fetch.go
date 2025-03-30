@@ -42,6 +42,8 @@ func FetchText(url string, init FetchInit) (body []byte, status ResponseStatus, 
   resp := fasthttp.Response{}
   if err = utils.WithStack(fasthttp.DoRedirects(&req, &resp, init.MaxRedirects)); err != nil { return }
 
+  // println("REQUEST:", req.String())
+  // println("BOODDYY: ", string(body))
   return resp.Body(), ResponseStatus(resp.StatusCode()), nil
 }
 

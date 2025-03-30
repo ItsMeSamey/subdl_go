@@ -3,7 +3,7 @@ module subtitle_downloader
 go 1.24.1
 
 require (
-	github.com/ItsMeSamey/go_fuzzy v1.0.0
+	github.com/ItsMeSamey/go_fuzzy v1.0.1
 	github.com/ItsMeSamey/go_utils v1.0.5
 	github.com/PuerkitoBio/goquery v1.10.2
 	github.com/bytedance/sonic v1.13.2
