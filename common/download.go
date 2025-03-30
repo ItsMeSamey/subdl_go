@@ -1,5 +1,7 @@
 package common
 
+import "github.com/ItsMeSamey/go_fuzzy"
+
 type LanguageID string
 
 const (
@@ -122,7 +124,7 @@ var LanguageNameMap = map[LanguageID]string{
 
 type SearchOptions struct {
   Language      LanguageID
-// SearchOptions interface{}
+  SearchOptions fuzzy.Sorter[float32, string, string]
 }
 type MovieListData struct {
   // The title of the movie
@@ -156,7 +158,7 @@ type SubtitleList interface {
 }
 
 type DownloadedSubtitle struct {
-  Subtitles []byte
+  Subtitle []byte
   Filename  string
 }
 type DownloadedFileData struct {
