@@ -1,17 +1,19 @@
 package dlutils
 
 import (
-  "io"
+  "archive/zip"
   "bytes"
+  "io"
   "regexp"
   "strings"
-  "archive/zip"
 
   "subtitle_downloader/common"
 
-  "github.com/valyala/fasthttp"
   "github.com/ItsMeSamey/go_fuzzy"
+  "github.com/ItsMeSamey/go_fuzzy/heuristics"
+  "github.com/ItsMeSamey/go_fuzzy/transformers"
   "github.com/ItsMeSamey/go_utils"
+  "github.com/valyala/fasthttp"
 )
 
 type sortable []*zip.File
@@ -81,6 +83,32 @@ func Download(entry common.SubtitleListEntry) (retval common.DownloadedSubtitle,
       Filename: filename,
     }}
   }
+
+  return
+}
+
+func DownloadSubtitle(
+  query string,
+  options common.SearchOptions,
+  provider func(query string, options common.SearchOptions) ([]common.MovieListEntry, error),
+) (retval common.DownloadedSubtitle, err error) {
+  if options.Sorter.ScoreFn == nil {
+    options.Sorter.ScoreFn = heuristics.Wrap[float32](heuristics.FrequencySimilarity)
+    options.Sorter.Transformer = transformers.Lowercase()
+  }
+
+  movies, err := provider("The Matrix", options)
+  if err = utils.WithStack(err); err != nil { return }
+  if len(movies) == 0 { return }
+  // TODO: maybe sort movies
+
+  subtitles, err := movies[0].ToSubtitleLinks()
+  if err = utils.WithStack(err); err != nil { return }
+  if len(subtitles) == 0 { return }
+  // TODO: maybe sort subtitles
+
+  retval, err = Download(subtitles[0])
+  if err = utils.WithStack(err); err != nil { return }
 
   return
 }
