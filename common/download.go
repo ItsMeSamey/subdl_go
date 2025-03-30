@@ -123,8 +123,8 @@ var LanguageNameMap = map[LanguageID]string{
 }
 
 type SearchOptions struct {
-  Language      LanguageID
-  SearchOptions fuzzy.Sorter[float32, string, string]
+  Language LanguageID
+  Sorter   fuzzy.Sorter[float32, string, string]
 }
 type MovieListData struct {
   // The title of the movie

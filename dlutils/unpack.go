@@ -1,15 +1,15 @@
 package dlutils
 
 import (
-	"io"
-	"bytes"
-	"strings"
-	"archive/zip"
+  "io"
+  "bytes"
+  "strings"
+  "archive/zip"
 
-	"subtitle_downloader/common"
+  "subtitle_downloader/common"
 
-	"github.com/ItsMeSamey/go_fuzzy"
-	"github.com/ItsMeSamey/go_utils"
+  "github.com/ItsMeSamey/go_fuzzy"
+  "github.com/ItsMeSamey/go_utils"
 )
 
 type sortable []*zip.File

@@ -1,6 +1,7 @@
 package dlutils
 
 import (
+  "fmt"
   "bytes"
 
   "github.com/bytedance/sonic"
@@ -9,9 +10,11 @@ import (
   "github.com/PuerkitoBio/goquery"
 )
 
-type FetchResponse struct {
-  Status int
-  Body   []byte
+type ResponseStatus int
+func (status ResponseStatus) OK() bool { return status >= 200 && status < 300 }
+func (status ResponseStatus) Error() error {
+  if status.OK() { return nil }
+  return utils.WithStack(fmt.Errorf("HTTP error: Bad Status: %d", status))
 }
 
 type Header struct {
@@ -33,23 +36,26 @@ func (init FetchInit) AsFasthttpRequest() (req fasthttp.Request) {
   return
 }
 
-func Fetch(url string, init FetchInit) (out FetchResponse, err error) {
+func FetchText(url string, init FetchInit) (body []byte, status ResponseStatus, err error) {
   req := init.AsFasthttpRequest()
   resp := fasthttp.Response{}
   if err = utils.WithStack(fasthttp.DoRedirects(&req, &resp, init.MaxRedirects)); err != nil { return }
 
-  return FetchResponse{Status: resp.StatusCode(), Body: resp.Body()}, nil
+  return resp.Body(), ResponseStatus(resp.StatusCode()), nil
 }
 
-func (resp *FetchResponse) OK() bool {
-  return resp.Status >= 200 && resp.Status < 300
+func FetchJson[T any](url string, init FetchInit) (json T, status ResponseStatus, err error) {
+  body, status, err := FetchText(url, init)
+  if err != nil { return }
+  err = utils.WithStack(sonic.Unmarshal(body, &json))
+  return 
 }
-func (resp *FetchResponse) JSON(out any) (err error) {
-  return utils.WithStack(sonic.Unmarshal(resp.Body, out))
-}
-func (resp *FetchResponse) HTML() (out *goquery.Document, err error) {
-  doc, err := goquery.NewDocumentFromReader(bytes.NewReader(resp.Body))
-  return doc, utils.WithStack(err)
+
+func FetchHtml(url string, init FetchInit) (out *goquery.Document, status ResponseStatus, err error) {
+  body, status, err := FetchText(url, init)
+  if err != nil { return }
+  doc, err := goquery.NewDocumentFromReader(bytes.NewReader(body))
+  return doc, status, utils.WithStack(err)
 }
 
 func Download(url string, init FetchInit, processResponse func(req *fasthttp.Response) error) (err error) {
