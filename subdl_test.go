@@ -1,10 +1,11 @@
-package providers
+package subdl
 
 import (
   "testing"
 
   "github.com/ItsMeSamey/subdl_go/common"
   "github.com/ItsMeSamey/subdl_go/dlutils"
+  "github.com/ItsMeSamey/subdl_go/providers"
 
   "github.com/ItsMeSamey/go_fuzzy/heuristics"
   "github.com/ItsMeSamey/go_fuzzy/transformers"
@@ -60,12 +61,12 @@ func TestFetchMovieSubtitlesOrg(t *testing.T) {
     name string
     provider func(query string, options common.SearchOptions) ([]common.MovieListEntry, error)
   }{
-    // {"FetchMovieSubtitlesOrg", FetchMovieSubtitlesOrg},
-    // {"FetchMoviesubtitlesrtCom", FetchMoviesubtitlesrtCom},
-    // {"OpenSubtitlesCom", FetchOpenSubtitlesCom},
-    // {"PodnapisiNet", FetchPodnapisiNet},
-    // {"SubdlCom", FetchSubdlCom},
-    // {"YifySubtitlesCh", FetchYifySubtitlesCh},
+    {"FetchMovieSubtitlesOrg", providers.FetchMovieSubtitlesOrg},
+    {"FetchMoviesubtitlesrtCom", providers.FetchMoviesubtitlesrtCom},
+    {"OpenSubtitlesCom", providers.FetchOpenSubtitlesCom},
+    {"PodnapisiNet", providers.FetchPodnapisiNet},
+    {"SubdlCom", providers.FetchSubdlCom},
+    {"YifySubtitlesCh", providers.FetchYifySubtitlesCh},
   }
 
   for _, tt := range tests {
@@ -76,4 +77,5 @@ func TestFetchMovieSubtitlesOrg(t *testing.T) {
     })
   }
 }
+
 
