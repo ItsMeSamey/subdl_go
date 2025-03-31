@@ -15,7 +15,7 @@ import (
 
 const opensubtitles_com = "https://www.opensubtitles.com"
 
-type OpenSubtitlesSuggestion struct {
+type openSubtitlesSuggestion struct {
   Title          string  `json:"title"`
   Year           string  `json:"year"`
   ID             string  `json:"id"`
@@ -26,7 +26,7 @@ type OpenSubtitlesSuggestion struct {
   Path           string  `json:"path"`
 }
 
-type OpenSubtitlesSubtitlesResponse struct {
+type openSubtitlesSubtitlesResponse struct {
   Data [][]string `json:"data"`
 }
 
@@ -38,7 +38,7 @@ func FetchOpenSubtitlesCom(query string, options common.SearchOptions) (retval [
 
   autocompleteURL := opensubtitles_com + "/en/en/search/autocomplete/" + url.QueryEscape(query) + ".json"
 
-  suggestions, status, err := dlutils.FetchJson[[]OpenSubtitlesSuggestion](autocompleteURL, dlutils.FetchInit{})
+  suggestions, status, err := dlutils.FetchJson[[]openSubtitlesSuggestion](autocompleteURL, dlutils.FetchInit{})
   if err != nil { return nil, utils.WithStack(err) }
   if err = status.Error(); err != nil { return }
 
@@ -60,11 +60,9 @@ type OpenSubtitlesMovieLink struct {
   data common.MovieListData
   link string
 }
-
 func (m *OpenSubtitlesMovieLink) Data() *common.MovieListData { return &m.data }
-
 func (m *OpenSubtitlesMovieLink) ToSubtitleLinks() (retval []common.SubtitleListEntry, err error) {
-  subtitlesResponse, status, err := dlutils.FetchJson[OpenSubtitlesSubtitlesResponse](m.link, dlutils.FetchInit{})
+  subtitlesResponse, status, err := dlutils.FetchJson[openSubtitlesSubtitlesResponse](m.link, dlutils.FetchInit{})
   if err != nil { return nil, utils.WithStack(err) }
   if err = status.Error(); err != nil { return }
 
@@ -119,7 +117,6 @@ type OpenSubtitlesSubtitleLink struct {
   initialLink string
   finalLink   string
 }
-
 func (s *OpenSubtitlesSubtitleLink) Data() *common.SubtitleListData { return &s.data }
 func (s *OpenSubtitlesSubtitleLink) IsZip() bool { return false }
 

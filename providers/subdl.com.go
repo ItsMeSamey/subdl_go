@@ -14,7 +14,7 @@ import (
 const subdl_com_api = "https://api.subdl.com"
 const subdl_com_site = "https://subdl.com"
 
-type SubdlSuggestion struct {
+type subdlSuggestion struct {
   Type         string `json:"type"`
   Name         string `json:"name"`
   PosterURL    string `json:"poster_url"`
@@ -22,14 +22,13 @@ type SubdlSuggestion struct {
   Link         string `json:"link"`
   OriginalName string `json:"original_name"`
 }
-
-type SubdlSuggestionResult struct {
-  Results []SubdlSuggestion `json:"results"`
+type subdlSuggestionResult struct {
+  Results []subdlSuggestion `json:"results"`
 }
 
 func FetchSubdlCom(query string, options common.SearchOptions) (retval []common.MovieListEntry, err error) {
   searchURL := subdl_com_api + "/auto?query=" + url.QueryEscape(query)
-  searchResult, status, err := dlutils.FetchJson[SubdlSuggestionResult](searchURL, dlutils.FetchInit{})
+  searchResult, status, err := dlutils.FetchJson[subdlSuggestionResult](searchURL, dlutils.FetchInit{})
   if err != nil {
     return nil, utils.WithStack(err)
   }
@@ -54,9 +53,7 @@ type SubdlMovieLink struct {
   data common.MovieListData
   link string
 }
-
 func (m *SubdlMovieLink) Data() *common.MovieListData { return &m.data }
-
 func (m *SubdlMovieLink) ToSubtitleLinks() (retval []common.SubtitleListEntry, err error) {
   root, status, err := dlutils.FetchHtml(subdl_com_site + m.link, dlutils.FetchInit{})
   if err != nil { return nil, utils.WithStack(err) }

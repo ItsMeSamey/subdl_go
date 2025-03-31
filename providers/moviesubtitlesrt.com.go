@@ -41,9 +41,7 @@ type MoviesubtitlesrtMovieLink struct {
   data common.MovieListData
   link string
 }
-
 func (m *MoviesubtitlesrtMovieLink) Data() *common.MovieListData { return &m.data }
-
 func (m *MoviesubtitlesrtMovieLink) ToSubtitleLinks() (retval []common.SubtitleListEntry, err error) {
   root, status, err := dlutils.FetchHtml(m.link, dlutils.FetchInit{})
   if err != nil { return nil, utils.WithStack(err) }

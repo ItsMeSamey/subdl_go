@@ -13,17 +13,17 @@ import (
 
 const podnapisi_net = "https://www.podnapisi.net"
 
-type PodnapisiPoster struct {
+type podnapisiPoster struct {
   Inline string `json:"inline"`
   Normal string `json:"normal"`
   Small  string `json:"small"`
   Title  string `json:"title"`
 }
 
-type PodnapisiSuggestion struct {
+type podnapisiSuggestion struct {
   Aliases   []string        `json:"aliases"`
   ID        string          `json:"id"`
-  Posters   PodnapisiPoster `json:"posters"`
+  Posters   podnapisiPoster `json:"posters"`
   Providers []string        `json:"providers"`
   Slug      string          `json:"slug"`
   Title     string          `json:"title"`
@@ -31,15 +31,15 @@ type PodnapisiSuggestion struct {
   Year      int             `json:"year"`
 }
 
-type PodnapisiSuggestionResult struct {
-  Aggs   map[string]any         `json:"aggs"`
-  Data   []PodnapisiSuggestion  `json:"data"`
-  Status string                 `json:"status"`
+type podnapisiSuggestionResult struct {
+  Aggs   map[string]any        `json:"aggs"`
+  Data   []podnapisiSuggestion `json:"data"`
+  Status string                `json:"status"`
 }
 
 func FetchPodnapisiNet(query string, options common.SearchOptions) (retval []common.MovieListEntry, err error) {
   searchURL := podnapisi_net + "/moviedb/search/?keywords=" + url.QueryEscape(query)
-  searchResult, status, err := dlutils.FetchJson[PodnapisiSuggestionResult](searchURL, dlutils.FetchInit{
+  searchResult, status, err := dlutils.FetchJson[podnapisiSuggestionResult](searchURL, dlutils.FetchInit{
     Headers: []dlutils.Header{
       {Key: "X-Requested-With", Value: "XMLHttpRequest"},
       {Key: "Accept", Value: "*/*"},
@@ -65,9 +65,7 @@ type PodnapisiMovieLink struct {
   data    common.MovieListData
   movieID string
 }
-
 func (m *PodnapisiMovieLink) Data() *common.MovieListData { return &m.data }
-
 func (m *PodnapisiMovieLink) ToSubtitleLinks() (retval []common.SubtitleListEntry, err error) {
   subtitlesSearchURL := podnapisi_net + "/subtitles/search/" + m.movieID
 

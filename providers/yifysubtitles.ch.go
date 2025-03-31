@@ -14,14 +14,14 @@ import (
 
 const yifysubtitles_ch = "https://yifysubtitles.ch"
 
-type YifySubtitlesSuggestion struct {
+type sifySubtitlesSuggestion struct {
   Movie string `json:"movie"`
   Imdb  string `json:"imdb"`
 }
 
 func FetchYifySubtitlesCh(query string, options common.SearchOptions) (retval []common.MovieListEntry, err error) {
   searchURL := yifysubtitles_ch + "/ajax/search/?mov=" + url.QueryEscape(query)
-  searchResult, status, err := dlutils.FetchJson[[]YifySubtitlesSuggestion](searchURL, dlutils.FetchInit{})
+  searchResult, status, err := dlutils.FetchJson[[]sifySubtitlesSuggestion](searchURL, dlutils.FetchInit{})
   if err != nil { return nil, utils.WithStack(err) }
   if err = status.Error(); err != nil { return }
 
@@ -95,7 +95,6 @@ type YifySubtitlesSubtitleLink struct {
   data common.SubtitleListData
   link string
 }
-
 func (s *YifySubtitlesSubtitleLink) Data() *common.SubtitleListData { return &s.data }
 func (s *YifySubtitlesSubtitleLink) IsZip() bool { return true }
 func (s *YifySubtitlesSubtitleLink) DownloadLink() (string, error) {
