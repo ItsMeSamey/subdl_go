@@ -3,15 +3,12 @@ package dlutils
 import (
   "io"
   "bytes"
-  "regexp"
   "strings"
   "archive/zip"
 
   "github.com/ItsMeSamey/subdl_go/common"
 
   "github.com/ItsMeSamey/go_fuzzy"
-  "github.com/ItsMeSamey/go_fuzzy/heuristics"
-  "github.com/ItsMeSamey/go_fuzzy/transformers"
   "github.com/ItsMeSamey/go_utils"
   "github.com/valyala/fasthttp"
 )
@@ -48,7 +45,41 @@ func unpackZipped(sorter fuzzy.Sorter[float32, string, string], target string, d
   return out, nil
 }
 
-var filenameRegex = regexp.MustCompile(`filename="([^"]+?)"`)
+func extractFilename(header string) (string) {
+  const filenamePrefix = `filename="`
+  startIndex := strings.Index(header, filenamePrefix)
+  if startIndex == -1 { return "" }
+  startIndex += len(filenamePrefix)
+
+  var filename strings.Builder
+  escaped := false
+  for i := startIndex; i < len(header); i++ {
+    char := header[i]
+
+    if char == '"' && !escaped { break } // Closing double quote
+
+    if escaped {
+      switch char {
+      case '"':
+        filename.WriteByte('"')
+      case '\\':
+        filename.WriteByte('\\')
+      default:
+        filename.WriteByte('\\')
+        filename.WriteByte(char)
+      }
+      escaped = false
+    } else if char == '\\' {
+      escaped = true
+    } else {
+      filename.WriteByte(char)
+    }
+  }
+
+  // if escaped { return "" } // unterminated escape sequence in filename
+  return filename.String()
+}
+
 func DownloadSubtitleEntry(entry common.SubtitleListEntry) (retval common.DownloadedSubtitle, err error) {
   url, err := entry.DownloadLink()
   if err = utils.WithStack(err); err != nil { return }
@@ -59,13 +90,13 @@ func DownloadSubtitleEntry(entry common.SubtitleListEntry) (retval common.Downlo
   if err = utils.WithStack(fasthttp.DoRedirects(&req, &resp, 1 << 16)); err != nil { return }
 
   data := resp.Body()
-  var filename string
-
-  filenames := filenameRegex.FindSubmatch(resp.Header.Peek("Content-Disposition"))
-  if len(filenames) >= 1 {
-    filename = string(filenames[0])
-  } else {
-    filename = entry.Data().Filename
+  filename := extractFilename(string(resp.Header.Peek("Content-Disposition")))
+  if filename == "" { filename = entry.Data().Filename }
+  if filename == "" { filename = entry.Data().Parent.Data().Title }
+  if filename == "" {
+    uriPath := req.URI().Path()
+    if len(uriPath) > 256 { uriPath = uriPath[:256] }
+    filename = string(uriPath)
   }
 
   retval.Parent = entry
