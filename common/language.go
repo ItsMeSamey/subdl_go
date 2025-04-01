@@ -5,6 +5,7 @@ import "github.com/ItsMeSamey/go_fuzzy"
 type LanguageID string
 
 const (
+  LangNone  LanguageID = ""      // Indicates no language preference
   LangAN    LanguageID = "an"    // Aragonese
   LangAR    LanguageID = "ar"    // Arabic
   LangAT    LanguageID = "at"    // Asturian (non standard?)

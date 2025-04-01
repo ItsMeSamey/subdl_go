@@ -42,7 +42,6 @@ import (
 
   "github.com/ItsMeSamey/subdl_go"
   "github.com/ItsMeSamey/subdl_go/common"
-  "github.com/ItsMeSamey/subdl_go/dlutils"
   "github.com/ItsMeSamey/subdl_go/providers"
 )
 
@@ -51,7 +50,7 @@ func main() {
     Language: common.LangEN,
   }
 
-  result, err := Download("Inception", options, providers.FetchOpenSubtitlesCom)
+  result, err := subdl.Download("The Matrix", options, providers.FetchOpenSubtitlesCom)
   if err != nil {
     fmt.Println("Error fetching subtitles:", err)
     return
@@ -71,25 +70,43 @@ import (
   "fmt"
 
   "github.com/ItsMeSamey/go_fuzzy"
-  "github.com/ItsMeSamey/subdl_go"
+  "github.com/ItsMeSamey/go_fuzzy/heuristics"
+  "github.com/ItsMeSamey/go_fuzzy/transformers"
+
+  "github.com/ItsMeSamey/subdl_go/common"
   "github.com/ItsMeSamey/subdl_go/dlutils"
   "github.com/ItsMeSamey/subdl_go/providers"
-  "github.com/ItsMeSamey/subdl_go/common"
 )
 
 func main() {
   options := common.SearchOptions{
     Language: common.LangEN,
     Sorter: fuzzy.Sorter[float32, string, string]{
-    Scorer: heuristics.Levens,
+      Scorer: fuzzy.Scorer[float32, string, string]{
+        ScoreFn: heuristics.Wrap[float32](heuristics.LevenshteinSimilarityPercentage),
+        Transformer: transformers.Lowercase(),
+      },
     },
   }
 
-  result, err := subdl.Download("Inception", options, providers.FetchOpenSubtitlesCom)
+  movies, err := providers.FetchMovieSubtitlesOrg("The Matrix", options)
   if err != nil {
-    fmt.Println("Error fetching subtitles:", err)
+    fmt.Println("Error fetching movie list:", err)
     return
   }
+
+  // See documentation for "github.com/ItsMeSamey/go_fuzzy"
+  options.Sorter.SortAny(fuzzy.ToSwapper(movies, func (m common.MovieListEntry) string {return m.Data().Title}), "matrix reloaded")
+
+  reloadedMovie := movies[0]
+  subtitles, err := reloadedMovie.ToSubtitleLinks()
+  if err != nil {
+    fmt.Println("Error fetching subtitle list:", err)
+    return
+  }
+
+  fmt.Println("Found", len(subtitles), "subtitles for", reloadedMovie.Data().Title)
+  result, err := dlutils.DownloadSubtitleEntry(subtitles[0])
 
   fmt.Println("File: ", result.Subtitles[0].Filename)
   fmt.Println("Subtitle: ", string(result.Subtitles[0].Subtitle[:100])) // First 100 characters only for readability
