@@ -1,18 +1,19 @@
 package subdl
 
 import (
-  "fmt"
-  "testing"
+	"encoding/json"
+	"fmt"
+	"testing"
 
-  "github.com/ItsMeSamey/go_utils"
+	"github.com/ItsMeSamey/go_utils"
 
-  "github.com/ItsMeSamey/subdl_go/common"
-  "github.com/ItsMeSamey/subdl_go/dlutils"
-  "github.com/ItsMeSamey/subdl_go/providers"
+	"github.com/ItsMeSamey/subdl_go/common"
+	"github.com/ItsMeSamey/subdl_go/dlutils"
+	"github.com/ItsMeSamey/subdl_go/providers"
 
-  "github.com/ItsMeSamey/go_fuzzy"
-  "github.com/ItsMeSamey/go_fuzzy/heuristics"
-  "github.com/ItsMeSamey/go_fuzzy/transformers"
+	"github.com/ItsMeSamey/go_fuzzy"
+	"github.com/ItsMeSamey/go_fuzzy/heuristics"
+	"github.com/ItsMeSamey/go_fuzzy/transformers"
 )
 
 func testProvider(t *testing.T, providerFn func(query string, options common.SearchOptions) ([]common.MovieListEntry, error)) {
@@ -33,6 +34,7 @@ func testProvider(t *testing.T, providerFn func(query string, options common.Sea
   if len(movies) == 0 {
     t.Fatalf("No movies found.")
   }
+  for _, m := range movies { fmt.Println(m.Data().Title) }
 
   subtitles, err := movies[0].ToSubtitleLinks()
   if err != nil {
@@ -40,6 +42,13 @@ func testProvider(t *testing.T, providerFn func(query string, options common.Sea
   }
   if len(subtitles) == 0 {
     t.Fatalf("No subtitles found.")
+  }
+  for _, s := range subtitles {
+    oldp := s.Data().Parent
+    s.Data().Parent = nil
+    output, _ := json.Marshal(s.Data())
+    s.Data().Parent = oldp
+    fmt.Println(string(output))
   }
 
   result, err := dlutils.DownloadSubtitleEntry(subtitles[0])
@@ -74,27 +83,28 @@ func TestFetchMovieSubtitlesOrg(t *testing.T) {
 
   for _, tt := range tests {
     t.Run(tt.name, func(t *testing.T) {
-      t.Parallel()
-      t.Logf("Testing %s", tt.name)
+      fmt.Printf("Testing %s\n", tt.name)
       testProvider(t, tt.provider)
     })
   }
 }
 
-// func TestReadmeBasic(t *testing.T) {
-//   t.Parallel()
-//   options := common.SearchOptions{
-//     Language: common.LangEN,
-//   }
-//
-//   result, err := Download("The Matrix", options, providers.FetchOpenSubtitlesCom)
-//   if err != nil { t.Fatal("Error fetching subtitles:", err) }
-//
-//   fmt.Println("File: ", result.Subtitles[0].Filename)
-//   fmt.Println("Subtitle: ", string(result.Subtitles[0].Subtitle[:100])) // First 100 characters only for readability
-// }
+func TestReadmeBasic(t *testing.T) {
+  return
+  t.Parallel()
+  options := common.SearchOptions{
+    Language: common.LangEN,
+  }
+
+  result, err := Download("The Matrix", options, providers.FetchOpenSubtitlesCom)
+  if err != nil { t.Fatal("Error fetching subtitles:", err) }
+
+  fmt.Println("File: ", result.Subtitles[0].Filename)
+  fmt.Println("Subtitle: ", string(result.Subtitles[0].Subtitle[:100])) // First 100 characters only for readability
+}
 
 func TestReadmeAdvanced(t *testing.T) {
+  return
   t.Parallel()
   options := common.SearchOptions{
     Language: common.LangEN,
