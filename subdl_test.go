@@ -1,19 +1,19 @@
 package subdl
 
 import (
-	"encoding/json"
-	"fmt"
-	"testing"
+  "encoding/json"
+  "fmt"
+  "testing"
 
-	"github.com/ItsMeSamey/go_utils"
+  "github.com/ItsMeSamey/go_utils"
 
-	"github.com/ItsMeSamey/subdl_go/common"
-	"github.com/ItsMeSamey/subdl_go/dlutils"
-	"github.com/ItsMeSamey/subdl_go/providers"
+  "github.com/ItsMeSamey/subdl_go/common"
+  "github.com/ItsMeSamey/subdl_go/dlutils"
+  "github.com/ItsMeSamey/subdl_go/providers"
 
-	"github.com/ItsMeSamey/go_fuzzy"
-	"github.com/ItsMeSamey/go_fuzzy/heuristics"
-	"github.com/ItsMeSamey/go_fuzzy/transformers"
+  "github.com/ItsMeSamey/go_fuzzy"
+  "github.com/ItsMeSamey/go_fuzzy/heuristics"
+  "github.com/ItsMeSamey/go_fuzzy/transformers"
 )
 
 func testProvider(t *testing.T, providerFn func(query string, options common.SearchOptions) ([]common.MovieListEntry, error)) {
@@ -90,13 +90,12 @@ func TestFetchMovieSubtitlesOrg(t *testing.T) {
 }
 
 func TestReadmeBasic(t *testing.T) {
-  return
   t.Parallel()
   options := common.SearchOptions{
     Language: common.LangEN,
   }
 
-  result, err := Download("The Matrix", options, providers.FetchOpenSubtitlesCom)
+  result, err := Download("The Matrix", options, providers.FetchOpenSubtitlesCom, common.DownloadOptions{})
   if err != nil { t.Fatal("Error fetching subtitles:", err) }
 
   fmt.Println("File: ", result.Subtitles[0].Filename)

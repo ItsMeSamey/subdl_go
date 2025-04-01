@@ -6,6 +6,16 @@ type SearchOptions struct {
   Language LanguageID
   Sorter   fuzzy.Sorter[float32, string, string]
 }
+type DownloadOptions struct {
+  // Set this to "" to not sort the movie list
+  MovieListQuery     string
+  MovieListSorter    fuzzy.Sorter[float32, string, string]
+
+  // Set this to "" to not sort the subtitle list
+  SubtitleListQuery  string
+  SubtitleListSorter fuzzy.Sorter[float32, string, string]
+}
+
 type MovieListData struct {
   // The title of the movie
   Title   string

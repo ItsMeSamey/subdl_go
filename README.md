@@ -50,7 +50,7 @@ func main() {
     Language: common.LangEN,
   }
 
-  result, err := subdl.Download("The Matrix", options, providers.FetchOpenSubtitlesCom)
+  result, err := subdl.Download("The Matrix", options, providers.FetchOpenSubtitlesCom, common.DownloadOptions{})
   if err != nil {
     fmt.Println("Error fetching subtitles:", err)
     return
