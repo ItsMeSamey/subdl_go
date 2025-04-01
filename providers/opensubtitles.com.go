@@ -32,9 +32,7 @@ type openSubtitlesSubtitlesResponse struct {
 
 func FetchOpenSubtitlesCom(query string, options common.SearchOptions) (retval []common.MovieListEntry, err error) {
   languageID := "en"
-  if options.Language != "" {
-    languageID = string(options.Language)
-  }
+  if options.Language != "" { languageID = string(options.Language) }
 
   autocompleteURL := opensubtitles_com + "/en/en/search/autocomplete/" + url.QueryEscape(query) + ".json"
 
@@ -73,13 +71,13 @@ func (m *OpenSubtitlesMovieLink) ToSubtitleLinks() (retval []common.SubtitleList
 
     if len(s) > 2 {
       doc, _ := goquery.NewDocumentFromReader(strings.NewReader(s[2]))
-      filename = strings.Split(strings.TrimSpace(doc.Text()), "\n")[0]
+      filename = strings.TrimSpace(doc.Children().First().Children().Last().Children().First().Text())
     }
 
     if len(s) > 1 {
-      doc, _ := goquery.NewDocumentFromReader(strings.NewReader(s[1]))
-      language, _ = doc.Children().First().Attr("title")
-      language = strings.TrimSpace(language)
+      doc, err := goquery.NewDocumentFromReader(strings.NewReader(s[1]))
+      if err != nil { continue }
+      language = strings.TrimSpace(doc.Children().First().Children().Last().Text())
     }
 
     doc, _ := goquery.NewDocumentFromReader(strings.NewReader(s[len(s)-1]))
@@ -92,7 +90,7 @@ func (m *OpenSubtitlesMovieLink) ToSubtitleLinks() (retval []common.SubtitleList
       data: common.SubtitleListData{
         Parent:   m,
         Filename: filename,
-        Language: language,
+        Language: strings.ToLower(language),
       },
       initialLink: initialLink,
     })
@@ -102,9 +100,7 @@ func (m *OpenSubtitlesMovieLink) ToSubtitleLinks() (retval []common.SubtitleList
   if targetLang != "" {
     filteredRetval := []common.SubtitleListEntry{}
     for _, entry := range retval {
-      if strings.ToLower(entry.Data().Language) == targetLang {
-        filteredRetval = append(filteredRetval, entry)
-      }
+      if entry.Data().Language == targetLang { filteredRetval = append(filteredRetval, entry) }
     }
     retval = filteredRetval
   }
