@@ -83,7 +83,7 @@ func main() {
     Language: common.LangEN,
     Sorter: fuzzy.Sorter[float32, string, string]{
       Scorer: fuzzy.Scorer[float32, string, string]{
-        ScoreFn: heuristics.Wrap[float32](heuristics.LevenshteinSimilarityPercentage),
+        ScoreFn: heuristics.LevenshteinSimilarityPercentage[float32, string, string],
         Transformer: transformers.Lowercase(),
       },
     },
