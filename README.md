@@ -2,6 +2,9 @@
 
 `subdl_go` is a Go package designed to facilitate the search and download of movie subtitles from various online providers. It provides a common interface for fetching movie and subtitle data, making it easy to integrate subtitle downloading functionality into your Go applications.
 
+> [!NOTE]
+> There is also a js version of this library available at [subdl_js](https://github.com/ItsMeSamey/subdl_js)
+
 ## Table of Contents
 
 - [Installation](#installation)
