@@ -22,11 +22,6 @@ func testProvider(t *testing.T, providerFn func(query string, options common.Sea
   query := "The Matrix"
   options := common.SearchOptions{}
 
-  if options.Sorter.ScoreFn == nil {
-    options.Sorter.ScoreFn = heuristics.Wrap[float32](heuristics.FrequencySimilarity)
-    options.Sorter.Transformer = transformers.Lowercase()
-  }
-
   movies, err := providerFn(query, options)
   if err != nil {
     t.Fatalf("Error fetching movies: %v", err)
@@ -110,7 +105,7 @@ func TestReadmeAdvanced(t *testing.T) {
     Language: common.LangEN,
     Sorter: fuzzy.Sorter[float32, string, string]{
       Scorer: fuzzy.Scorer[float32, string, string]{
-        ScoreFn: heuristics.Wrap[float32](heuristics.LevenshteinSimilarityPercentage),
+        ScoreFn: heuristics.LevenshteinSimilarityPercentage[float32, string, string],
         Transformer: transformers.Lowercase(),
       },
     },
