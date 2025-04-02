@@ -2,8 +2,6 @@ package subdl
 
 import (
   "github.com/ItsMeSamey/go_fuzzy"
-  "github.com/ItsMeSamey/go_fuzzy/heuristics"
-  "github.com/ItsMeSamey/go_fuzzy/transformers"
 
   "github.com/ItsMeSamey/subdl_go/common"
   "github.com/ItsMeSamey/subdl_go/dlutils"
@@ -23,11 +21,6 @@ func Download(
   provider func(query string, options common.SearchOptions) ([]common.MovieListEntry, error),
   downloadOptions common.DownloadOptions,
 ) (retval common.DownloadedSubtitle, err error) {
-  if searchOptions.Sorter.ScoreFn == nil {
-    searchOptions.Sorter.ScoreFn = heuristics.Wrap[float32](heuristics.FrequencySimilarity)
-    searchOptions.Sorter.Transformer = transformers.Lowercase()
-  }
-
   movies, err := provider(query, searchOptions)
   if err != nil { return }
   if len(movies) == 0 {
